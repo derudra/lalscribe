@@ -50,7 +50,7 @@ if st.button("Analyze Audio"):
                 """
                 
                 # 6. Call Gemini 1.5 Pro (which natively supports audio up to 9.5 hours)
-                model = genai.GenerativeModel('gemini-2.5-pro')
+                model = genai.GenerativeModel('gemini-2.5-flash')
                 
                 st.info("Analyzing audio and generating transcription & summary...")
                 response = model.generate_content([prompt, uploaded_gemini_file])
@@ -66,4 +66,5 @@ if st.button("Analyze Audio"):
                 
         except Exception as e:
             st.error(f"An error occurred: {e}")
+
 
