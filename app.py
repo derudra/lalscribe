@@ -29,8 +29,8 @@ with st.sidebar:
     st.markdown("Generates human-readable, formatted meeting notes and translated transcripts from mixed-language audio.")
 
 # --- MAIN CONTENT AREA ---
-st.title("🎙️ Multilingual Meeting Transcriber & Summarizer")
-st.markdown("Upload your meeting recording to generate a structured, copy-friendly summary and transcript.")
+st.title("🎙️ LalScribe")
+st.markdown("Multilingual Meeting Transcriber & Summarizer - Upload your meeting recording to generate a structured summary and transcript.")
 
 audio_file = st.file_uploader("Upload Audio File", type=["mp3", "wav", "m4a", "ogg"])
 
@@ -111,4 +111,5 @@ if st.button("Process Audio", type="primary"):
 
         except Exception as e:
             st.error(f"An error occurred: {e}")
+
 
