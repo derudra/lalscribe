@@ -144,12 +144,73 @@ if st.button("Process Audio", type="primary"):
                 
                 st.success("Processing Complete!")
                 
-                # --- DISPLAY OUTPUT ---
-                st.subheader("📋 Output Data")
-                st.caption("Hover over the top right corner of the box below and click the 'Copy' icon to copy the entire JSON payload.")
-                
-                # Render the copyable window natively
-                st.code(response.text, language="json")
+                try:
+                    # 1. Parse the JSON response
+                    data = json.loads(response.text)
+                    
+                    # 2. Create UI Tabs
+                    tab1, tab2, tab3 = st.tabs(["📝 Dashboard & Notes", "💬 Full Transcript", "⚙️ Raw JSON"])
+                    
+                    with tab1:
+                        st.header("Meeting Dashboard")
+                        
+                        # --- Top Row: Metadata Metrics ---
+                        meta = data.get("meeting_metadata", {})
+                        col1, col2, col3 = st.columns(3)
+                        col1.metric("Speakers Detected", meta.get("speaker_count_estimate", "N/A"))
+                        col2.metric("Primary Languages", ", ".join(meta.get("primary_languages", [])))
+                        col3.metric("Audio Quality", ", ".join(meta.get("audio_quality_notes", [])))
+                        
+                        st.divider()
+                        
+                        # --- Middle Row: Overview & Summary ---
+                        notes = data.get("meeting_note", {})
+                        col_left, col_right = st.columns(2)
+                        
+                        with col_left:
+                            st.subheader("Overview")
+                            st.write(notes.get("meeting_overview", "No overview provided."))
+                        
+                        with col_right:
+                            st.subheader("Executive Summary")
+                            for bullet in notes.get("executive_summary_bullets", []):
+                                st.markdown(f"- {bullet}")
+                                
+                        st.divider()
+                        
+                        # --- Bottom Row: Action Items ---
+                        st.subheader("✅ Action Items")
+                        actions = notes.get("action_items", [])
+                        if actions:
+                            for act in actions:
+                                st.markdown(f"**{act.get('action')}** \n*(Owner: {act.get('owner', 'Unassigned')} | Deadline: {act.get('deadline', 'None')} | Priority: {act.get('priority', 'Normal')})*")
+                        else:
+                            st.write("No action items detected.")
+                            
+                        # --- Hidden Expander for Extra Details ---
+                        with st.expander("View Decisions, Risks, and Next Steps"):
+                            st.markdown("**Decisions Made:**")
+                            for dec in notes.get("decisions_made", []):
+                                st.markdown(f"- {dec.get('decision')} *(Owner: {dec.get('owner', 'N/A')})*")
+                            
+                            st.markdown("**Risks / Blockers:**")
+                            for risk in notes.get("risks_or_blockers", []):
+                                st.markdown(f"- {risk}")
+                                
+                    with tab2:
+                        st.header("Transcript")
+                        st.caption("Hover over the top right corner of the box below to copy the transcript.")
+                        # Using text_area for easy reading and scrolling, but st.code allows better native copying
+                        st.code(data.get("transcript_plaintext", "No transcript available."), language="text")
+                        
+                    with tab3:
+                        st.header("Raw JSON Output")
+                        st.code(response.text, language="json")
+
+                except json.JSONDecodeError:
+                    st.error("The model did not return perfectly formatted JSON. Here is the raw output:")
+                    st.code(response.text)
 
         except Exception as e:
             st.error(f"An error occurred: {e}")
+
