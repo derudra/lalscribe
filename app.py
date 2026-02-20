@@ -108,11 +108,7 @@ if st.button("Process Audio", type="primary"):
                 st.markdown(response.text)
                 
                 st.divider()
-                
-                # 2. Provide a 1-click copy block
-                st.subheader("📋 Copyable Output")
-                st.caption("Hover over the top right corner of the box below and click the 'Copy' icon to instantly copy all text.")
-                st.code(response.text, language="markdown")
 
         except Exception as e:
             st.error(f"An error occurred: {e}")
+
